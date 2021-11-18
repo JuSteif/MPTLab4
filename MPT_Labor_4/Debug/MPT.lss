@@ -3,29 +3,29 @@ MPT.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000110  00000000  00000000  00000054  2**1
+  0 .text         00000180  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  00800060  00000164  2**0
+  1 .data         00000000  00800060  00800060  000001d4  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .comment      00000030  00000000  00000000  00000164  2**0
+  2 .comment      00000030  00000000  00000000  000001d4  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000194  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000204  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000040  00000000  00000000  000001d0  2**0
+  4 .debug_aranges 00000068  00000000  00000000  00000240  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000106  00000000  00000000  00000210  2**0
+  5 .debug_info   000001a6  00000000  00000000  000002a8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000097  00000000  00000000  00000316  2**0
+  6 .debug_abbrev 000000fd  00000000  00000000  0000044e  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   0000013c  00000000  00000000  000003ad  2**0
+  7 .debug_line   000001e4  00000000  00000000  0000054b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000068  00000000  00000000  000004ec  2**2
+  8 .debug_frame  00000108  00000000  00000000  00000730  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000177  00000000  00000000  00000554  2**0
+  9 .debug_str    000001b6  00000000  00000000  00000838  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000076  00000000  00000000  000006cb  2**0
+ 10 .debug_loc    000001b7  00000000  00000000  000009ee  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000020  00000000  00000000  00000741  2**0
+ 11 .debug_ranges 00000048  00000000  00000000  00000ba5  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -65,7 +65,7 @@ Disassembly of section .text:
   60:	10 e0       	ldi	r17, 0x00	; 0
   62:	a0 e6       	ldi	r26, 0x60	; 96
   64:	b0 e0       	ldi	r27, 0x00	; 0
-  66:	e0 e1       	ldi	r30, 0x10	; 16
+  66:	e0 e8       	ldi	r30, 0x80	; 128
   68:	f1 e0       	ldi	r31, 0x01	; 1
   6a:	02 c0       	rjmp	.+4      	; 0x70 <__do_copy_data+0x10>
   6c:	05 90       	lpm	r0, Z+
@@ -73,128 +73,200 @@ Disassembly of section .text:
   70:	a0 36       	cpi	r26, 0x60	; 96
   72:	b1 07       	cpc	r27, r17
   74:	d9 f7       	brne	.-10     	; 0x6c <__do_copy_data+0xc>
-  76:	0e 94 7f 00 	call	0xfe	; 0xfe <main>
-  7a:	0c 94 86 00 	jmp	0x10c	; 0x10c <_exit>
+  76:	0e 94 b7 00 	call	0x16e	; 0x16e <main>
+  7a:	0c 94 be 00 	jmp	0x17c	; 0x17c <_exit>
 
 0000007e <__bad_interrupt>:
   7e:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
-00000082 <A_4_1_1>:
+00000082 <A_4_2_1>:
 //##############################################################################
 
-// A_4_1_1: A/D-Wandler Kanal 0 kontinuierlich einlesen und als 8-Bit-Wert auf
-//          den LEDs ausgeben.
-void A_4_1_1(void)
+// A_4_2_1: A/D-Wandlung im Multiplexverfahren von 2 Kanälen und Ausgabe auf den
+//          LEDs 0..3 bzw. den LEDs 4..7 für beide Kanäle.
+void A_4_2_1(void)
 {
   82:	cf 93       	push	r28
   84:	df 93       	push	r29
-  86:	cd b7       	in	r28, 0x3d	; 61
-  88:	de b7       	in	r29, 0x3e	; 62
-	// IHR_CODE_HIER ...
-	ADMUX = 0b00000000;
-  8a:	87 e2       	ldi	r24, 0x27	; 39
-  8c:	90 e0       	ldi	r25, 0x00	; 0
-  8e:	fc 01       	movw	r30, r24
-  90:	10 82       	st	Z, r1
-	ADCSRA = 0b10000111;
-  92:	86 e2       	ldi	r24, 0x26	; 38
-  94:	90 e0       	ldi	r25, 0x00	; 0
-  96:	27 e8       	ldi	r18, 0x87	; 135
-  98:	fc 01       	movw	r30, r24
-  9a:	20 83       	st	Z, r18
-	SFIOR &= ~(111 << ADTS0);
-  9c:	80 e5       	ldi	r24, 0x50	; 80
-  9e:	90 e0       	ldi	r25, 0x00	; 0
-  a0:	20 e5       	ldi	r18, 0x50	; 80
-  a2:	30 e0       	ldi	r19, 0x00	; 0
-  a4:	f9 01       	movw	r30, r18
-  a6:	20 81       	ld	r18, Z
-  a8:	2f 71       	andi	r18, 0x1F	; 31
-  aa:	fc 01       	movw	r30, r24
-  ac:	20 83       	st	Z, r18
-	
-	LED_DDR = 0xff;
-  ae:	84 e3       	ldi	r24, 0x34	; 52
-  b0:	90 e0       	ldi	r25, 0x00	; 0
-  b2:	2f ef       	ldi	r18, 0xFF	; 255
-  b4:	fc 01       	movw	r30, r24
-  b6:	20 83       	st	Z, r18
-	LED_PORT = 0xff;
-  b8:	85 e3       	ldi	r24, 0x35	; 53
-  ba:	90 e0       	ldi	r25, 0x00	; 0
-  bc:	2f ef       	ldi	r18, 0xFF	; 255
-  be:	fc 01       	movw	r30, r24
-  c0:	20 83       	st	Z, r18
-	
-	while (1)
-	{
-		ADCSRA |= 1 << ADSC;
-  c2:	86 e2       	ldi	r24, 0x26	; 38
-  c4:	90 e0       	ldi	r25, 0x00	; 0
-  c6:	26 e2       	ldi	r18, 0x26	; 38
-  c8:	30 e0       	ldi	r19, 0x00	; 0
-  ca:	f9 01       	movw	r30, r18
-  cc:	20 81       	ld	r18, Z
-  ce:	20 64       	ori	r18, 0x40	; 64
-  d0:	fc 01       	movw	r30, r24
-  d2:	20 83       	st	Z, r18
-		
-		while (BIT_IS_CLR(ADCSRA, ADSC))
-  d4:	00 00       	nop
-  d6:	86 e2       	ldi	r24, 0x26	; 38
-  d8:	90 e0       	ldi	r25, 0x00	; 0
-  da:	fc 01       	movw	r30, r24
-  dc:	80 81       	ld	r24, Z
-  de:	88 2f       	mov	r24, r24
-  e0:	90 e0       	ldi	r25, 0x00	; 0
-  e2:	80 74       	andi	r24, 0x40	; 64
-  e4:	99 27       	eor	r25, r25
-  e6:	89 2b       	or	r24, r25
-  e8:	b1 f3       	breq	.-20     	; 0xd6 <A_4_1_1+0x54>
-		{
-		}
-		
-		LED_PORT = ~(ADCH);
-  ea:	85 e3       	ldi	r24, 0x35	; 53
-  ec:	90 e0       	ldi	r25, 0x00	; 0
-  ee:	25 e2       	ldi	r18, 0x25	; 37
-  f0:	30 e0       	ldi	r19, 0x00	; 0
-  f2:	f9 01       	movw	r30, r18
-  f4:	20 81       	ld	r18, Z
-  f6:	20 95       	com	r18
-  f8:	fc 01       	movw	r30, r24
-  fa:	20 83       	st	Z, r18
-	}
-  fc:	e2 cf       	rjmp	.-60     	; 0xc2 <A_4_1_1+0x40>
+  86:	1f 92       	push	r1
+  88:	cd b7       	in	r28, 0x3d	; 61
+  8a:	de b7       	in	r29, 0x3e	; 62
+  // IHR_CODE_HIER ...
+  ADMUX = 0b00100000;
+  8c:	87 e2       	ldi	r24, 0x27	; 39
+  8e:	90 e0       	ldi	r25, 0x00	; 0
+  90:	20 e2       	ldi	r18, 0x20	; 32
+  92:	fc 01       	movw	r30, r24
+  94:	20 83       	st	Z, r18
+  ADCSRA = 0b10000111;
+  96:	86 e2       	ldi	r24, 0x26	; 38
+  98:	90 e0       	ldi	r25, 0x00	; 0
+  9a:	27 e8       	ldi	r18, 0x87	; 135
+  9c:	fc 01       	movw	r30, r24
+  9e:	20 83       	st	Z, r18
+  SFIOR &= ~(111 << ADTS0);
+  a0:	80 e5       	ldi	r24, 0x50	; 80
+  a2:	90 e0       	ldi	r25, 0x00	; 0
+  a4:	20 e5       	ldi	r18, 0x50	; 80
+  a6:	30 e0       	ldi	r19, 0x00	; 0
+  a8:	f9 01       	movw	r30, r18
+  aa:	20 81       	ld	r18, Z
+  ac:	2f 71       	andi	r18, 0x1F	; 31
+  ae:	fc 01       	movw	r30, r24
+  b0:	20 83       	st	Z, r18
+  
+  LED_DDR = 0xff;
+  b2:	84 e3       	ldi	r24, 0x34	; 52
+  b4:	90 e0       	ldi	r25, 0x00	; 0
+  b6:	2f ef       	ldi	r18, 0xFF	; 255
+  b8:	fc 01       	movw	r30, r24
+  ba:	20 83       	st	Z, r18
+  LED_PORT = 0xff;
+  bc:	85 e3       	ldi	r24, 0x35	; 53
+  be:	90 e0       	ldi	r25, 0x00	; 0
+  c0:	2f ef       	ldi	r18, 0xFF	; 255
+  c2:	fc 01       	movw	r30, r24
+  c4:	20 83       	st	Z, r18
+  
+  uint8_t LEDRR;
+  
+  while (1)
+  {
+	  LEDRR = 0;
+  c6:	19 82       	std	Y+1, r1	; 0x01
+	  
+	  CLR_BIT(ADMUX, 0);
+  c8:	87 e2       	ldi	r24, 0x27	; 39
+  ca:	90 e0       	ldi	r25, 0x00	; 0
+  cc:	27 e2       	ldi	r18, 0x27	; 39
+  ce:	30 e0       	ldi	r19, 0x00	; 0
+  d0:	f9 01       	movw	r30, r18
+  d2:	20 81       	ld	r18, Z
+  d4:	2e 7f       	andi	r18, 0xFE	; 254
+  d6:	fc 01       	movw	r30, r24
+  d8:	20 83       	st	Z, r18
+	  ADCSRA |= 1 << ADSC;
+  da:	86 e2       	ldi	r24, 0x26	; 38
+  dc:	90 e0       	ldi	r25, 0x00	; 0
+  de:	26 e2       	ldi	r18, 0x26	; 38
+  e0:	30 e0       	ldi	r19, 0x00	; 0
+  e2:	f9 01       	movw	r30, r18
+  e4:	20 81       	ld	r18, Z
+  e6:	20 64       	ori	r18, 0x40	; 64
+  e8:	fc 01       	movw	r30, r24
+  ea:	20 83       	st	Z, r18
+	  
+	  while (BIT_IS_CLR(ADCSRA, ADSC))
+  ec:	00 00       	nop
+  ee:	86 e2       	ldi	r24, 0x26	; 38
+  f0:	90 e0       	ldi	r25, 0x00	; 0
+  f2:	fc 01       	movw	r30, r24
+  f4:	80 81       	ld	r24, Z
+  f6:	88 2f       	mov	r24, r24
+  f8:	90 e0       	ldi	r25, 0x00	; 0
+  fa:	80 74       	andi	r24, 0x40	; 64
+  fc:	99 27       	eor	r25, r25
+  fe:	89 2b       	or	r24, r25
+ 100:	b1 f3       	breq	.-20     	; 0xee <A_4_2_1+0x6c>
+	  {
+	  }
+	  
+	  LEDRR = ADCH & 0xf0;
+ 102:	85 e2       	ldi	r24, 0x25	; 37
+ 104:	90 e0       	ldi	r25, 0x00	; 0
+ 106:	fc 01       	movw	r30, r24
+ 108:	80 81       	ld	r24, Z
+ 10a:	80 7f       	andi	r24, 0xF0	; 240
+ 10c:	89 83       	std	Y+1, r24	; 0x01
+	  
+	  SET_BIT(ADMUX, 0);
+ 10e:	87 e2       	ldi	r24, 0x27	; 39
+ 110:	90 e0       	ldi	r25, 0x00	; 0
+ 112:	27 e2       	ldi	r18, 0x27	; 39
+ 114:	30 e0       	ldi	r19, 0x00	; 0
+ 116:	f9 01       	movw	r30, r18
+ 118:	20 81       	ld	r18, Z
+ 11a:	21 60       	ori	r18, 0x01	; 1
+ 11c:	fc 01       	movw	r30, r24
+ 11e:	20 83       	st	Z, r18
+	  ADCSRA |= 1 << ADSC;
+ 120:	86 e2       	ldi	r24, 0x26	; 38
+ 122:	90 e0       	ldi	r25, 0x00	; 0
+ 124:	26 e2       	ldi	r18, 0x26	; 38
+ 126:	30 e0       	ldi	r19, 0x00	; 0
+ 128:	f9 01       	movw	r30, r18
+ 12a:	20 81       	ld	r18, Z
+ 12c:	20 64       	ori	r18, 0x40	; 64
+ 12e:	fc 01       	movw	r30, r24
+ 130:	20 83       	st	Z, r18
+	  
+	  while (BIT_IS_CLR(ADCSRA, ADSC))
+ 132:	00 00       	nop
+ 134:	86 e2       	ldi	r24, 0x26	; 38
+ 136:	90 e0       	ldi	r25, 0x00	; 0
+ 138:	fc 01       	movw	r30, r24
+ 13a:	80 81       	ld	r24, Z
+ 13c:	88 2f       	mov	r24, r24
+ 13e:	90 e0       	ldi	r25, 0x00	; 0
+ 140:	80 74       	andi	r24, 0x40	; 64
+ 142:	99 27       	eor	r25, r25
+ 144:	89 2b       	or	r24, r25
+ 146:	b1 f3       	breq	.-20     	; 0x134 <A_4_2_1+0xb2>
+	  {
+	  }
+	  
+	  LEDRR |= ADCH >> 4;
+ 148:	85 e2       	ldi	r24, 0x25	; 37
+ 14a:	90 e0       	ldi	r25, 0x00	; 0
+ 14c:	fc 01       	movw	r30, r24
+ 14e:	80 81       	ld	r24, Z
+ 150:	82 95       	swap	r24
+ 152:	8f 70       	andi	r24, 0x0F	; 15
+ 154:	88 2f       	mov	r24, r24
+ 156:	90 e0       	ldi	r25, 0x00	; 0
+ 158:	98 2f       	mov	r25, r24
+ 15a:	89 81       	ldd	r24, Y+1	; 0x01
+ 15c:	89 2b       	or	r24, r25
+ 15e:	89 83       	std	Y+1, r24	; 0x01
+	  
+	  LED_PORT = ~(LEDRR);
+ 160:	85 e3       	ldi	r24, 0x35	; 53
+ 162:	90 e0       	ldi	r25, 0x00	; 0
+ 164:	29 81       	ldd	r18, Y+1	; 0x01
+ 166:	20 95       	com	r18
+ 168:	fc 01       	movw	r30, r24
+ 16a:	20 83       	st	Z, r18
+  }
+ 16c:	ac cf       	rjmp	.-168    	; 0xc6 <A_4_2_1+0x44>
 
-000000fe <main>:
+0000016e <main>:
 #include "Labor_4/MPT_LAB_4_2.h"
 #include "Labor_4/MPT_LAB_4_3.h"
 
 
 int main(void)
 {
-  fe:	cf 93       	push	r28
- 100:	df 93       	push	r29
- 102:	cd b7       	in	r28, 0x3d	; 61
- 104:	de b7       	in	r29, 0x3e	; 62
+ 16e:	cf 93       	push	r28
+ 170:	df 93       	push	r29
+ 172:	cd b7       	in	r28, 0x3d	; 61
+ 174:	de b7       	in	r29, 0x3e	; 62
+  //          LEDs 0..3 bzw. den LEDs 4..7 für beide Kanäle.
+  // A_4_2_2: A/D-Wandlung mit Hilfsfunktionen zur Initialisierung und zum Einlesen.
+  // A_4_2_3: A/D-Wandlung mit Ausgabe der Bitwerte auf dem Terminal.
+  // A_4_2_4: A/D-Wandlung mit Ausgabe der umgerechneten Spannungswerte auf dem Terminal.
   //------------------------------------------------------------------------------
-  // Aufgabe A_4_1: A/D-Wandler in Betrieb nehmen
-  // A_4_1_1: A/D-Wandler Kanal 0 kontinuierlich einlesen und als 8-Bit-Wert auf
-  //          den LEDs ausgeben.
-  //------------------------------------------------------------------------------
-  A_4_1_1();
- 106:	0e 94 41 00 	call	0x82	; 0x82 <A_4_1_1>
+  A_4_2_1();
+ 176:	0e 94 41 00 	call	0x82	; 0x82 <A_4_2_1>
 
 
   while(1)
   {
       //TODO:: Please write your application code 
   }
- 10a:	ff cf       	rjmp	.-2      	; 0x10a <main+0xc>
+ 17a:	ff cf       	rjmp	.-2      	; 0x17a <main+0xc>
 
-0000010c <_exit>:
- 10c:	f8 94       	cli
+0000017c <_exit>:
+ 17c:	f8 94       	cli
 
-0000010e <__stop_program>:
- 10e:	ff cf       	rjmp	.-2      	; 0x10e <__stop_program>
+0000017e <__stop_program>:
+ 17e:	ff cf       	rjmp	.-2      	; 0x17e <__stop_program>

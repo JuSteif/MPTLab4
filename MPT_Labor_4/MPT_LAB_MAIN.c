@@ -28,7 +28,7 @@ int main(void)
   // A_4_1_1: A/D-Wandler Kanal 0 kontinuierlich einlesen und als 8-Bit-Wert auf
   //          den LEDs ausgeben.
   //------------------------------------------------------------------------------
-  A_4_1_1();
+  //A_4_1_1();
 
 
   //------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ int main(void)
   // A_4_2_3: A/D-Wandlung mit Ausgabe der Bitwerte auf dem Terminal.
   // A_4_2_4: A/D-Wandlung mit Ausgabe der umgerechneten Spannungswerte auf dem Terminal.
   //------------------------------------------------------------------------------
-  //A_4_2_1();
+  A_4_2_1();
   //A_4_2_2();
   //A_4_2_3();
   //A_4_2_4();

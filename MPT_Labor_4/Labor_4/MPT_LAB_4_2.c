@@ -89,6 +89,39 @@ static uint16_t AdcRead(uint8_t AdcChan)
 void A_4_2_1(void)
 {
   // IHR_CODE_HIER ...
+  ADMUX = 0b00100000;
+  ADCSRA = 0b10000111;
+  SFIOR &= ~(111 << ADTS0);
+  
+  LED_DDR = 0xff;
+  LED_PORT = 0xff;
+  
+  uint8_t LEDRR;
+  
+  while (1)
+  {
+	  LEDRR = 0;
+	  
+	  CLR_BIT(ADMUX, 0);
+	  ADCSRA |= 1 << ADSC;
+	  
+	  while (BIT_IS_CLR(ADCSRA, ADSC))
+	  {
+	  }
+	  
+	  LEDRR = ADCH & 0xf0;
+	  
+	  SET_BIT(ADMUX, 0);
+	  ADCSRA |= 1 << ADSC;
+	  
+	  while (BIT_IS_CLR(ADCSRA, ADSC))
+	  {
+	  }
+	  
+	  LEDRR |= ADCH >> 4;
+	  
+	  LED_PORT = ~(LEDRR);
+  }
 }	
 
 //##############################################################################
