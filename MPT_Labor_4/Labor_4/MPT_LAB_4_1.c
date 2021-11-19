@@ -86,7 +86,7 @@ void A_4_1_1(void)
 	{
 		ADCSRA |= 1 << ADSC;
 		
-		while (BIT_IS_CLR(ADCSRA, ADSC))
+		while (BIT_IS_SET(ADCSRA, ADSC))
 		{
 		}
 		
