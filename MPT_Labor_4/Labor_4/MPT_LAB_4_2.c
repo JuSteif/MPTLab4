@@ -151,6 +151,8 @@ void A_4_2_2(void)
 {
 	// IHR_CODE_HIER ...
 	uint8_t LEDRR;
+	LED_DDR = 0xff;
+	LED_PORT = 0xff;
 	AdcInit();
 	
 	while(1){
@@ -172,9 +174,13 @@ void A_4_2_3(void)
 {
 	// IHR_CODE_HIER ...
 	uint8_t LEDRR;
+	LED_DDR = 0xff;
+	LED_PORT = 0xff;
 	AdcInit();
 	
 	UsartInit(8, 0, 1, 9600);
+	
+	char output[50];
 	
 	while(1){
 		uint16_t ch0 = AdcRead(0);
@@ -186,7 +192,6 @@ void A_4_2_3(void)
 		LEDRR = (ch0LED << 4) | (ch1LED);
 		LED_PORT = ~(LEDRR);
 		
-		char* output = malloc(50);
 		sprintf(output, "AD-Wandlung: Kanal[0] = %4d Kanal[1] = %4d\n\r", ch0, ch1);
 		UsartPuts(output);
 		
@@ -202,9 +207,12 @@ void A_4_2_4(void)
 	// IHR_CODE_HIER ...
 	// IHR_CODE_HIER ...
 	uint8_t LEDRR;
+	LED_DDR = 0xff;
+	LED_PORT = 0xff;
 	AdcInit();
 	
 	UsartInit(8, 0, 1, 9600);
+	char output[50];
 	
 	while(1){
 		uint16_t ch0 = AdcRead(0);
@@ -216,14 +224,13 @@ void A_4_2_4(void)
 		LEDRR = (ch0LED << 4) | (ch1LED);
 		LED_PORT = ~(LEDRR);
 		
-		uint16_t m0 = ch0 * 5 * 1000 / 1024;
-		uint16_t m1 = ch1 * 5 * 1000 / 1024;
+		uint16_t m0 = (ch0 * (uint32_t)5000) / 1024;
+		uint16_t m1 = (ch1 * (uint32_t)5000) / 1024;
 		
-		char* output = malloc(80);
 		sprintf(output, "AD-Wandlung: Kanal[0] = %d,%03dV Kanal[1] = %d,%03dV\n\r", m0 / 1000, m0 % 1000, m1 / 1000, m1 % 1000);
 		UsartPuts(output);
 		
-		Wait_x_ms(500);
+		Wait_x_ms(1000);
 	}
 }
 

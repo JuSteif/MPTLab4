@@ -124,20 +124,20 @@ void A_4_3_1(void)
 	LED_DDR = 0b11111111;
 
 	// Alle LEDs aus
-	LED_PORT = 0b11111111;
+	LED_PORT = 0x00;
 
 	// Initialisierung der USART-Schnittstelle
 	// 8 Zeichenbits, 1 Stopbit, 0 Paritätsbit, 9600 Baud
 	UsartInit(8,1,0,9600);
 
 	AdcInit();
+	
+	uint8_t AdcChan;
+	uint16_t AdcRes;
+	char String[80];
 
 	while (1)
 	{
-		uint8_t AdcChan;
-		uint16_t AdcRes;
-		char String[80];
-
 		// AD-Kanal 2
 		// Kanal auswählen und in ADMUX maskieren
 		AdcChan = 2;
@@ -206,13 +206,13 @@ void A_4_3_2(void)
 	UsartInit(8,1,0,9600);
 
 	AdcInit();
+	
+	uint8_t AdcChan;
+	uint16_t AdcRes;
+	char String[80];
 
 	while (1)
 	{
-		uint8_t AdcChan;
-		uint16_t AdcRes;
-		char String[80];
-
 		// AD-Kanal 2
 		// Kanal auswählen und in ADMUX maskieren
 		AdcChan = 2;
@@ -279,55 +279,67 @@ void A_4_3_2(void)
 // A_4_3_3: Einlesen der Messwerte und Ausgabe mittels 20-stufiger Kennlinie.
 void A_4_3_3(void)
 {
-	// IHR_CODE_HIER ...
+	LED_DDR = 0b11111111;
+
+	// Alle LEDs aus
+	LED_PORT = 0b11111111;
+
+	// Initialisierung der USART-Schnittstelle
+	// 8 Zeichenbits, 1 Stopbit, 0 Paritätsbit, 9600 Baud
+	UsartInit(8,1,0,9600);
+
+	AdcInit();
+	
 	uint8_t AdcChan;
 	uint16_t AdcRes;
 	char String[80];
-
-	// AD-Kanal 2
-	// Kanal auswählen und in ADMUX maskieren
-	AdcChan = 2;
-	AdcRes = AdcRead(AdcChan);
-
-	// Ausgabe der Ergebnisse auf dem Terminal
-	// Berechnung der Werte als Festkommazahl
-	AdcRes = (AdcRes * (uint32_t)500)/1024;
-
-	sprintf(String, "AD-Wandlung: Kanal[2] = %d\n\r", AdcRes);
-	UsartPuts(String);
-
-	// Überführen des Messwertes aus der AD-Wandlung in die reale Entfernung
-	{
-		int32_t Dist = 0;
-
-		// Entfernung < Minimalentfernung?
-		if (AdcRes > GP2D120_3[0][0])						// GP2D120_1[Index_0: Messwert AD-Wandlung][Index_1: reale Entfernung]
-		{
-			// Distanz <= 30mm
-			Dist = GP2D120_3[0][1];
-		}
-		
-		else
-		// Entfernung > Maximalentfernung?
-		if (AdcRes < GP2D120_3[16][0])
-		{
-			// Distanz >= 400mm
-			Dist = GP2D120_3[16][1];
-		}
-		
-		// Entfernung liegt im gültigen Bereich
-		else
-		{
-			uint8_t ind = getInd(AdcRes);
-			Dist = GP2D120_3[ind][1] + ((GP2D120_3[ind+1][1]-GP2D120_3[ind][1])*(AdcRes-GP2D120_3[ind][0])) / (GP2D120_3[ind+1][0]-GP2D120_3[ind][0]);
-		}
-		
-		// Ausgabe der Entfernung in [mm]
-		sprintf(String, "Entfernung(1) = %3ld[mm]\n\r", Dist);
-		UsartPuts(String);
-	}
 	
-	Wait_x_ms(500);
+	while(1){
+		// AD-Kanal 2
+		// Kanal auswählen und in ADMUX maskieren
+		AdcChan = 2;
+		AdcRes = AdcRead(AdcChan);
+
+		// Ausgabe der Ergebnisse auf dem Terminal
+		// Berechnung der Werte als Festkommazahl
+		AdcRes = (AdcRes * (uint32_t)500)/1024;
+
+		sprintf(String, "AD-Wandlung: Kanal[2] = %d\n\r", AdcRes);
+		UsartPuts(String);
+
+		// Überführen des Messwertes aus der AD-Wandlung in die reale Entfernung
+		{
+			int32_t Dist = 0;
+
+			// Entfernung < Minimalentfernung?
+			if (AdcRes > GP2D120_3[0][0])						// GP2D120_1[Index_0: Messwert AD-Wandlung][Index_1: reale Entfernung]
+			{
+				// Distanz <= 30mm
+				Dist = GP2D120_3[0][1];
+			}
+			
+			else
+			// Entfernung > Maximalentfernung?
+			if (AdcRes < GP2D120_3[16][0])
+			{
+				// Distanz >= 400mm
+				Dist = GP2D120_3[16][1];
+			}
+			
+			// Entfernung liegt im gültigen Bereich
+			else
+			{
+				uint8_t ind = getInd(AdcRes);
+				Dist = GP2D120_3[ind][1] + ((GP2D120_3[ind+1][1]-GP2D120_3[ind][1])*(AdcRes-GP2D120_3[ind][0])) / (GP2D120_3[ind+1][0]-GP2D120_3[ind][0]);
+			}
+			
+			// Ausgabe der Entfernung in [mm]
+			sprintf(String, "Entfernung(1) = %3ld[mm]\n\r", Dist);
+			UsartPuts(String);
+		}
+		
+		Wait_x_ms(500);
+	}
 }
 
 //##############################################################################
