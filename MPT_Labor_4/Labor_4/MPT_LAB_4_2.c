@@ -106,7 +106,7 @@ static uint16_t AdcRead(uint8_t AdcChan)
 
 // A_4_2_1: A/D-Wandlung im Multiplexverfahren von 2 Kanälen und Ausgabe auf den
 //          LEDs 0..3 bzw. den LEDs 4..7 für beide Kanäle.
-void A_4_2_1(void)
+void A_4_2_1(void) 
 {
 	// IHR_CODE_HIER ...
 	ADMUX = 0b00100000;
